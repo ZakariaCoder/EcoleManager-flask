@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-person-badge text-primary"></i> Détails du Professeur</h1>
+                        <p class="text-muted mb-0">Informations complètes du professeur</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('professeur.professeur') }}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                        <a href="{{ url_for('professeur.modifier_prof', id=professeur.id_prof) }}" class="btn btn-warning">
+                            <i class="bi bi-pencil me-2"></i>Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations du professeur -->
+        <div class="row">
+            <!-- Photo et informations principales -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="professor-photo-container mb-3">
+                            {% if professeur.Photo %}
+                            <img src="{{ url_for('static', filename='uploads/' + professeur.Photo) }}" 
+                                 class="professor-photo-large rounded-circle" width="200" height="200" alt="Photo du professeur">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/default-professor.png') }}" 
+                                 class="professor-photo-large rounded-circle" width="200" height="200" alt="Photo par défaut">
+                            {% endif %}
+                        </div>
+                        <h4 class="professor-name">{{ professeur.prenom }} {{ professeur.nom }}</h4>
+                        <p class="text-muted mb-2">Professeur Titulaire</p>
+                        <span class="badge bg-primary fs-6 mb-3">Département {{ professeur.Departement }}</span>
+                        
+                        <div class="professor-status mb-3">
+                            <span class="badge bg-{% if professeur.status == 'Actif' %}success{% else %}warning{% endif %} fs-6">
+                                <i class="bi bi-check-circle me-1"></i>{{ professeur.status }}
+                            </span>
+                        </div>
+                        
+                        <div class="professor-id-display">
+                            <strong>ID:</strong> <span class="text-primary">#{{ professeur.id_prof }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0"><i class="bi bi-lightning"></i> Actions rapides</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('professeur.modifier_prof', id=professeur.id_prof) }}" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil me-2"></i>Modifier les informations
+                            </a>
+
+                            <button class="btn btn-outline-success btn-sm" onclick="sendEmail('{{ professeur.Email }}')">
+                                <i class="bi bi-envelope me-2"></i>Envoyer un email
+                            </button>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations détaillées -->
+            <div class="col-md-8">
+                <!-- Informations personnelles -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-circle text-primary me-2"></i>Informations personnelles
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Prénom</label>
+                                <p class="form-control-plaintext">{{ professeur.prenom }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Nom</label>
+                                <p class="form-control-plaintext">{{ professeur.nom }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <p class="form-control-plaintext">
+                                    <a href="mailto:{{ professeur.Email }}" class="text-decoration-none">
+                                        <i class="bi bi-envelope me-2"></i>{{ professeur.Email }}
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Téléphone</label>
+                                <p class="form-control-plaintext">
+                                    <a href="tel:{{ professeur.Telephone }}" class="text-decoration-none">
+                                        <i class="bi bi-telephone me-2"></i>{{ professeur.Telephone }}
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Date de naissance</label>
+                                <p class="form-control-plaintext">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    {% if professeur.date_naissance %}
+                                        {{ professeur.date_naissance.strftime('%d %B %Y') }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Genre</label>
+                                <p class="form-control-plaintext">
+                                    <i class="bi bi-person me-2"></i>
+                                    {% if professeur.genre == 'M' %}Masculin{% elif professeur.genre == 'F' %}Féminin{% else %}Non spécifié{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations professionnelles -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-briefcase text-primary me-2"></i>Informations professionnelles
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Département</label>
+                                <p class="form-control-plaintext">
+                                    <span class="badge bg-primary">{{ professeur.Departement }}</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Spécialité</label>
+                                <p class="form-control-plaintext">
+                                    {% if professeur.Specialite %}
+                                        {{ professeur.Specialite }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Date d'embauche</label>
+                                <p class="form-control-plaintext">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    {% if professeur.Date_embauche %}
+                                        {{ professeur.Date_embauche.strftime('%d %B %Y') }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Statut</label>
+                                <p class="form-control-plaintext">
+                                    <span class="badge bg-{% if professeur.status == 'Actif' %}success{% else %}warning{% endif %}">
+                                        <i class="bi bi-check-circle me-1"></i>{{ professeur.status }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adresse -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-geo-alt text-primary me-2"></i>Adresse
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">Adresse complète</label>
+                                <p class="form-control-plaintext">
+                                    <i class="bi bi-house me-2"></i>
+                                    {% if professeur.address %}
+                                        {{ professeur.address }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations supplémentaires -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle text-primary me-2"></i>Informations supplémentaires
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Site web personnel</label>
+                                <p class="form-control-plaintext">
+                                    {% if professeur.siteWeb %}
+                                    <a href="{{ professeur.siteWeb }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-globe me-2"></i>{{ professeur.siteWeb }}
+                                    </a>
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">LinkedIn</label>
+                                <p class="form-control-plaintext">
+                                    {% if professeur.LinkedIn %}
+                                    <a href="{{ professeur.LinkedIn }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-linkedin me-2"></i>{{ professeur.LinkedIn }}
+                                    </a>
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">Biographie</label>
+                                <p class="form-control-plaintext">
+                                    {% if professeur.Biographie %}
+                                        {{ professeur.Biographie }}
+                                    {% else %}
+                                        Aucune biographie disponible
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques et activités -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up text-primary me-2"></i>Statistiques et activités
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <div class="stats-number text-primary">8</div>
+                                    <div class="stats-label">Cours enseignés</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <div class="stats-number text-success">156</div>
+                                    <div class="stats-label">Étudiants</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <div class="stats-number text-warning">12</div>
+                                    <div class="stats-label">Publications</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <div class="stats-number text-info">5</div>
+                                    <div class="stats-label">Projets de recherche</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce professeur ? Cette action est irréversible.</p>
+                <div class="alert alert-warning">
+                    <strong>Professeur:</strong> {{ professeur.prenom }} {{ professeur.nom }} (#{{ professeur.id_prof }})
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Annuler
+                </button>
+                <form action="{{ url_for('professeur.supprimer_prof', id=professeur.id_prof) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fonction pour télécharger le CV
+function downloadCV() {
+    alert('Téléchargement du CV en cours...');
+    // Ici vous pouvez ajouter la logique de téléchargement
+}
+
+// Fonction pour envoyer un email
+function sendEmail(email) {
+    window.open(`mailto:${email}?subject=Contact depuis le système de gestion`);
+}
+
+
+
+// Initialisation des tooltips Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+
+<style>
+/* Styles spécifiques pour la page d'affichage du professeur */
+.professor-photo-large {
+    border: 4px solid #e9ecef;
+    transition: border-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.professor-photo-large:hover {
+    border-color: #007bff;
+}
+
+.professor-name {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.professor-status {
+    margin: 1rem 0;
+}
+
+.professor-id-display {
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stats-label {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.form-label {
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.form-control-plaintext {
+    color: #212529;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.form-control-plaintext a {
+    color: #007bff;
+}
+
+.form-control-plaintext a:hover {
+    color: #0056b3;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+@media (max-width: 768px) {
+    .professor-photo-large {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .stats-number {
+        font-size: 1.5rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+{% endblock %}

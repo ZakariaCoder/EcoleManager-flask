@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h1><i class="bi bi-book-fill"></i> Gestion des Matières</h1>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="{{ url_for('matiere.ajouter_mat') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Ajouter une matière
+                </a>
+            </div>
+        </div>
+
+        <!-- Barre de recherche et filtres -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Champ de recherche -->
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Rechercher par nom...">
+                                </div>
+                            </div>
+        
+                            <!-- Filtre par classe -->
+                            <div class="col-md-3">
+                                <select class="form-select" id="classFilter">
+                                    <option value="">Toutes les classes</option>
+                                    <optgroup label="Génie Informatique">
+                                        <option value="GI1">GI1</option>
+                                        <option value="GI2">GI2</option>
+                                        <option value="GI3">GI3</option>
+                                        <option value="GI4">GI4</option>
+                                        <option value="GI5">GI5</option>
+                                    </optgroup>
+                                    <optgroup label="Gestion et Administration">
+                                        <option value="GAE1">GAE1</option>
+                                        <option value="GAE2">GAE2</option>
+                                        <option value="GAE3">GAE3</option>
+                                        <option value="GAE4">GAE4</option>
+                                        <option value="GAE5">GAE5</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+        
+                            <!-- Filtre par professeur -->
+                            <div class="col-md-3">
+                                <select class="form-select" id="teacherFilter">
+                                    <option value="">Tous les professeurs</option>
+                                    {% for prof in professeurs %}
+                                    <option value="{{ prof.id_prof }}">{{ prof.prenom }} {{ prof.nom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+        
+                            <!-- Bouton de filtre -->
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" id="filterBtn">
+                                    <i class="bi bi-funnel"></i> Filtrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Script pour la fonctionnalité de recherche et filtrage -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const classFilter = document.getElementById('classFilter');
+                const teacherFilter = document.getElementById('teacherFilter');
+                const filterBtn = document.getElementById('filterBtn');
+        
+                // Fonction de filtrage
+                function applyFilters() {
+                    const searchValue = searchInput.value.toLowerCase();
+                    const classValue = classFilter.value;
+                    const teacherValue = teacherFilter.value;
+        
+                    // Get the DataTable instance
+                    const table = $('#subjectsTable').DataTable();
+                    
+                    table.rows().every(function() {
+                        const row = this.node();
+                        const matiereName = $(row).find('td:eq(1)').text().toLowerCase();
+                        const matiereClass = $(row).find('td:eq(4)').text();
+                        const matiereTeacher = $(row).find('td:eq(5)').text().toLowerCase();
+                        const teacherId = $(row).data('teacher-id') || '';
+        
+                        const nameMatch = searchValue === '' || matiereName.includes(searchValue);
+                        const classMatch = classValue === '' || matiereClass === classValue;
+                        const teacherMatch = teacherValue === '' || 
+                                            teacherId === teacherValue || 
+                                            matiereTeacher.includes(teacherValue.toLowerCase());
+        
+                        $(row).toggle(nameMatch && classMatch && teacherMatch);
+                    });
+                }
+        
+                // Événements
+                filterBtn.addEventListener('click', applyFilters);
+                
+                // Recherche en temps réel
+                searchInput.addEventListener('keyup', function() {
+                    if(this.value.length > 2 || this.value.length === 0) {
+                        applyFilters();
+                    }
+                });
+        
+                // Reset des filtres avec la touche Escape
+                document.addEventListener('keyup', function(e) {
+                    if(e.key === 'Escape') {
+                        searchInput.value = '';
+                        classFilter.value = '';
+                        teacherFilter.value = '';
+                        applyFilters();
+                    }
+                });
+            });
+        </script>
+        
+        <!-- Style supplémentaire -->
+        <style>
+            .input-group-text {
+                background-color: #f8f9fa;
+            }
+            optgroup {
+                font-weight: bold;
+                font-style: normal;
+                color: #495057;
+            }
+            optgroup option {
+                font-weight: normal;
+                padding-left: 20px;
+            }
+        </style>
+      
+        <!-- Tableau des matières -->
+        <div class="card">
+            <div class="card-body">
+                <table id="subjectsTable" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Volume Horaire</th>
+                            <th>Coefficient</th>
+                            <th>Classe</th>
+                            <th>Professeur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for matiere, prof_nom, prof_prenom in matieres %}
+                        <tr>
+                            <td>{{ matiere.id_matiere }}</td>
+                            <td><strong>{{ matiere.nom_matiere }}</strong></td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <i class="bi bi-clock"></i> {{ matiere.volume_horaire }}h
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star"></i> {{ matiere.coefficient }}
+                                </span>
+                            </td>
+                            <td><span class="badge bg-primary">{{ matiere.classe }}</span></td>
+                            <td>
+                                {% if matiere.id_prof %}
+                                    <i class="bi bi-person"></i> {{ prof_prenom }} {{ prof_nom }}
+                                {% else %}
+                                    <span class="text-muted">Non attribué</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    
+                                    <a href="{{ url_for('matiere.modifier_mat', id=matiere.id_matiere) }}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="{{ url_for('matiere.supprimer_mat', id=matiere.id_matiere) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette matière ?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    // Initialisation DataTable
+    $(document).ready(function() {
+        $('#subjectsTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+            },
+            responsive: true,
+            columnDefs: [
+                { responsivePriority: 1, targets: 1 }, // Nom matière
+                { responsivePriority: 2, targets: -1 }, // Actions
+                { responsivePriority: 3, targets: 4 }, // Classe
+                { responsivePriority: 4, targets: 5 }  // Professeur
+            ]
+        });
+    });
+
+    // Fonctions CRUD
+    function viewSubject(id) {
+        // Implémentez la vue détaillée
+        window.location.href = `/matiere/${id}`;
+    }
+
+    function editSubject(id) {
+        // Redirection vers la page de modification
+        window.location.href = `/matiere/modifier/${id}`;
+    }
+
+    function confirmDelete(id) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette matière ? Cette action est irréversible.')) {
+            // Soumission du formulaire de suppression
+            document.getElementById(`deleteForm${id}`).submit();
+        }
+    }
+</script>
+
+{% endblock %}

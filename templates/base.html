@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EcoleManager{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/etudiants/ajouter_etud.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/etudiants/afficher_etud.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/etudiants/modifier_etud.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/ajouter_note.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/note.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/matieres/matiere.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calendrier/calendrier.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header-footer.css') }}">
+</head>
+<body>
+    <!-- Modern Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="EcoleManager Logo">
+                <h1>EcoleManager</h1>
+            </div>
+            <div class="header-actions">
+                <div class="header-user">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB4PSIzMCIgeT0iMjUiIHdpZHRoPSI2MCIgaGVpZ2h0PSI3MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjQkNDMEQ0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTIgMTJjMi4yMSAwIDQtMS43OSA0LTRzLTEuNzktNC00LTQtNCAxLjc5LTQgNCAxLjc5IDQgNCA0em0wIDJjLTIuNjcgMC04IDEuMzQtOCA0djJoMTZ2LTJjMC0yLjY2LTUuMzMtNC04LTR6Ii8+Cjwvc3ZnPgo8L3N2Zz4K" alt="User">
+                    <span>{{ current_user.username if current_user.is_authenticated else 'Invité' }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header text-center">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="img-fluid">
+            <!-- <h4>EcoleManager</h4> -->
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="nav-item" data-page="dashboard">
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="etudiant">
+                <a href="{{ url_for('etudiant.etudiant') }}" class="nav-link">
+                    <i class="bi bi-people"></i>
+                    <span>Étudiants</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="matiere">
+                <a href="{{ url_for('matiere.matiere') }}" class="nav-link">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span>Matières</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="note">
+                <a href="{{ url_for('note.note') }}" class="nav-link">
+                    <i class="bi bi-clipboard-data"></i>
+                    <span>Notes</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="professeur">
+                <a href="{{ url_for('professeur.professeur') }}" class="nav-link">
+                    <i class="bi bi-person-workspace"></i>
+                    <span>Professeurs</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="document">
+                <a href="{{ url_for('import.import_page') }}" class="nav-link">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Documents</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="calendrier">
+                <a href="{{ url_for('calendrier') }}" class="nav-link">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Calendrier</span>
+                </a>
+            </li>
+            <li class="nav-item" data-page="deconnexion">
+                <a href="{{ url_for('deconnexion') }}" class="nav-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% block content %}
+    {% endblock %}
+
+    <script>
+        // Script pour gérer l'état actif des liens de navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer le chemin actuel
+            const currentPath = window.location.pathname;
+            
+            // Supprimer la classe active de tous les éléments
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Ajouter la classe active à l'élément correspondant
+            if (currentPath.includes('/dashboard') || currentPath === '/') {
+                document.querySelector('[data-page="dashboard"]').classList.add('active');
+            } else if (currentPath.includes('/etudiant')) {
+                document.querySelector('[data-page="etudiant"]').classList.add('active');
+            } else if (currentPath.includes('/matiere')) {
+                document.querySelector('[data-page="matiere"]').classList.add('active');
+            } else if (currentPath.includes('/note')) {
+                document.querySelector('[data-page="note"]').classList.add('active');
+            } else if (currentPath.includes('/professeur')) {
+                document.querySelector('[data-page="professeur"]').classList.add('active');
+            } else if (currentPath.includes('/document')) {
+                document.querySelector('[data-page="document"]').classList.add('active');
+            } else if (currentPath.includes('/calendrier')) {
+                document.querySelector('[data-page="calendrier"]').classList.add('active');
+            }
+        });
+     
+    // Toggle sidebar on mobile
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+
+    // Empêcher la sidebar de se fermer quand on clique dedans
+    document.querySelector('.sidebar').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Fermer la sidebar quand on clique à l'extérieur (sur mobile)
+    document.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').classList.remove('active');
+        }
+    });
+
+    </script>
+
+    <!-- Modern Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-copyright">
+                &copy; {{ now.year }} EcoleManager. Tous droits réservés.
+            </div>
+            <div class="footer-developers">
+                Développé par Houssam & Zakaria
+            </div>
+            <div class="footer-links">
+                <a href="#">Aide</a>
+                <a href="#">Confidentialité</a>
+                <a href="#">Conditions</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

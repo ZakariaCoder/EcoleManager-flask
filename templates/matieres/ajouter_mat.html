@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-book-plus text-primary"></i> Ajouter une Matière</h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire ci-dessous pour ajouter une nouvelle matière</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('matiere.matiere') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-book"></i> Informations de la matière</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="addSubjectForm" method="POST" action="{{ url_for('matiere.ajouter_mat') }}">
+                            
+                            
+                            <!-- Section Informations de base -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nom_matiere" class="form-label">
+                                        <i class="bi bi-bookmark"></i> Nom de la matière <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="nom_matiere" name="nom_matiere" required>
+                                    
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="classe" class="form-label">
+                                        <i class="bi bi-people"></i> Classe <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="classe" name="classe" required>
+                                        <option value="">Sélectionner une classe</option>
+                                        <option value="GI1">GI1</option>
+                                        <option value="GI2">GI2</option>
+                                        <option value="GI3">GI3</option>
+                                        <option value="GI4">GI4</option>
+                                        <option value="GI5">GI5</option>
+                                    </select>
+                                   
+                                </div>
+                            </div>
+
+                            <!-- Volume horaire et coefficient -->
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="volume_horaire" class="form-label">
+                                        <i class="bi bi-clock"></i> Volume horaire (h) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="volume_horaire" name="volume_horaire" min="1" max="100" required>
+                                   
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="coefficient" class="form-label">
+                                        <i class="bi bi-star"></i> Coefficient <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="coefficient" name="coefficient" min="1" max="10" step="0.5" required>
+                                  
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="professeur_id" class="form-label">
+                                        <i class="bi bi-person-badge"></i> Professeur
+                                    </label>
+                                    <select class="form-select" id="professeur_id" name="professeur_id">
+                                        <option value="">Non attribué</option>
+                                        {% for prof in professeurs %}
+                                            <option value="{{ prof.id_prof }}">{{ prof.prenom }} {{ prof.nom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Année universitaire et semestre -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="annee_universitaire" class="form-label">
+                                        <i class="bi bi-calendar-range"></i> Année universitaire
+                                    </label>
+                                    <select class="form-select" id="annee_universitaire" name="annee_universitaire">
+                                        <option value="2023-2024">2023-2024</option>
+                                        <option value="2024-2025" selected>2024-2025</option>
+                                        <option value="2025-2026">2025-2026</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="semestre" class="form-label">
+                                        <i class="bi bi-calendar-week"></i> Semestre
+                                    </label>
+                                    <select class="form-select" id="semestre" name="semestre">
+                                        <option value="Semestre1">Semestre 1</option>
+                                        <option value="Semestre2">Semestre 2</option>
+                                        <option value="Annuel">Annuel</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                           
+                            
+
+                            <!-- Boutons -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ url_for('matiere.matiere') }}" class="btn btn-outline-secondary">
+                                            <i class="bi bi-x-circle"></i> Annuler
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-circle"></i> Enregistrer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script de validation -->
+<script>
+    document.getElementById('addSubjectForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validation des champs requis
+        const requiredFields = ['nom_matiere', 'classe', 'volume_horaire', 'coefficient'];
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires.');
+        }
+    });
+</script>
+
+{% endblock %}

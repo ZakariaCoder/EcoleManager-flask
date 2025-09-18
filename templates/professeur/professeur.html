@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-person-badge text-primary"></i> Gestion des Professeurs</h1>
+                        <p class="text-muted mb-0">Gérez les informations des professeurs de l'établissement</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('professeur.ajouter_prof') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Ajouter un professeur
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtres et recherche -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label"><i class="bi bi-search"></i> Rechercher</label>
+                                <input type="text" id="searchInput" class="form-control" placeholder="Nom, prénom ou email...">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label"><i class="bi bi-funnel"></i> Département</label>
+                                <select id="departmentFilter" class="form-select">
+                                    <option value="">Tous les départements</option>
+                                    <option value="Informatique">Informatique</option>
+                                    <option value="Mathématiques">Mathématiques</option>
+                                    <option value="Physique">Physique</option>
+                                    <option value="Chimie">Chimie</option>
+                                    <option value="Biologie">Biologie</option>
+                                    <option value="Anglais">Anglais</option>
+                                    <option value="Français">Français</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label"><i class="bi bi-sort-alpha-down"></i> Trier par</label>
+                                <select id="sortSelect" class="form-select">
+                                    <option value="name_asc">Nom (A-Z)</option>
+                                    <option value="name_desc">Nom (Z-A)</option>
+                                    <option value="department_asc">Département (A-Z)</option>
+                                    <option value="department_desc">Département (Z-A)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                                    <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-primary text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3></h3>
+                        <p>Total Professeurs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3></h3>
+                        <p>Actifs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3></h3>
+                        <p>Inactifs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-info text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3></h3>
+                        <p>Départements</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des professeurs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-table"></i> Liste des professeurs</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="professorsTable" class="table table-hover mb-0">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Photo</th>
+                                        <th>Nom Complet</th>
+                                        <th>Email</th>
+                                        <th>Téléphone</th>
+                                        <th>Département</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prof in professeurs %}
+                                    <tr>
+                                        <td>
+                                            <span class="professor-id">#{{ prof.id_prof }}</span>
+                                        </td>
+                                        <td>
+                                            {% if prof.Photo %}
+                                            <img src="{{ url_for('static', filename='uploads/' + prof.Photo) }}" 
+                                                 class="professor-photo rounded-circle" width="45" height="45" alt="Photo">
+                                            {% else %}
+                                            <img src="{{ url_for('static', filename='img/default-professor.png') }}" 
+                                                 class="professor-photo rounded-circle" width="45" height="45" alt="Photo">
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="professor-info">
+                                                <h6 class="mb-0">{{ prof.prenom }} {{ prof.nom }}</h6>
+                                                
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="email-text">{{ prof.Email }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="phone-text">{{ prof.Telephone }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ prof.Departement }}</span>
+                                        </td>
+                                        <td>
+                                            {% if prof.status == 'Actif' %}
+                                            <span class="badge bg-success">{{ prof.status }}</span>
+                                            {% else %}
+                                            <span class="badge bg-warning">{{ prof.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{{ url_for('professeur.afficher_prof', id=prof.id_prof) }}" class="btn btn-sm btn-outline-primary" title="Voir détails">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('professeur.modifier_prof', id=prof.id_prof) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form action="{{ url_for('professeur.supprimer_prof', id=prof.id_prof) }}" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirmDelete()" title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                Affichage de 1 à {{ professeurs|length }} sur {{ professeurs|length }} professeurs
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#">Suivant</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce professeur ? Cette action est irréversible.</p>
+                <p class="mb-0"><strong>ID:</strong> <span id="deleteProfessorId"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-2"></i>Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialisation DataTable
+$(document).ready(function() {
+    $('#professorsTable').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+        },
+        responsive: true,
+        pageLength: 10,
+        order: [[2, 'asc']]
+    });
+});
+
+// Filtres
+$('#searchInput').on('keyup', function() {
+    $('#professorsTable').DataTable().search(this.value).draw();
+});
+
+$('#departmentFilter').on('change', function() {
+    filterTable();
+});
+
+$('#sortSelect').on('change', function() {
+    const value = $(this).val();
+    const table = $('#professorsTable').DataTable();
+    
+    switch(value) {
+        case 'name_asc':
+            table.order([2, 'asc']).draw();
+            break;
+        case 'name_desc':
+            table.order([2, 'desc']).draw();
+            break;
+        case 'department_asc':
+            table.order([5, 'asc']).draw();
+            break;
+        case 'department_desc':
+            table.order([5, 'desc']).draw();
+            break;
+    }
+});
+
+function filterTable() {
+    const departmentFilter = $('#departmentFilter').val();
+    const table = $('#professorsTable').DataTable();
+    
+    if (departmentFilter) {
+        table.column(5).search(departmentFilter).draw();
+    } else {
+        table.column(5).search('').draw();
+    }
+}
+
+function resetFilters() {
+    $('#searchInput').val('');
+    $('#departmentFilter').val('');
+    $('#sortSelect').val('name_asc');
+    
+    const table = $('#professorsTable').DataTable();
+    table.search('').columns().search('').order([2, 'asc']).draw();
+}
+
+// Fonction pour confirmer la suppression
+function confirmDelete() {
+    return confirm('Êtes-vous sûr de vouloir supprimer ce professeur ? Cette action est irréversible.');
+}
+
+// Initialisation des tooltips Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+
+<style>
+/* Styles spécifiques pour la page professeur */
+.stats-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+    opacity: 0.8;
+}
+
+.stats-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stats-content p {
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.professor-photo {
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+.professor-photo:hover {
+    border-color: #007bff;
+}
+
+.professor-info h6 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.professor-info small {
+    color: #6c757d;
+}
+
+.email-text {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.phone-text {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.professor-id {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+</style>
+
+{% endblock %}

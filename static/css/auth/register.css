@@ -1,0 +1,195 @@
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --light-color: rgba(248, 249, 250, 0.9);
+    --dark-color: #212529;
+    --text-color: #2d3748;
+    --border-color: rgba(45, 55, 72, 0.2);
+}
+
+body {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('/static/img/login.jpg') center/cover no-repeat fixed;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    color: var(--dark);
+}
+
+.auth-card {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.auth-header {
+    background: linear-gradient(to right,
+                rgba(67, 97, 238, 0.8),
+                rgba(63, 55, 201, 0.8));
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.auth-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right,
+                transparent,
+                rgba(255, 255, 255, 0.7),
+                transparent);
+}
+
+.auth-body {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.form-control {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.form-control::placeholder {
+    color: rgba(45, 55, 72, 0.5);
+    opacity: 1;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(72, 149, 239, 0.25);
+    background: rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+/* Amélioration de la lisibilité des textes */
+.auth-card h2,
+.auth-card p,
+.auth-card label,
+.auth-card .divider {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+/* Style des icônes */
+.password-toggle {
+    color: rgba(45, 55, 72, 0.6);
+    z-index: 5;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* Barre de force du mot de passe */
+.password-strength {
+    height: 4px;
+    background: rgba(233, 236, 239, 0.7);
+    margin-top: 8px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.4s ease, background 0.3s ease;
+}
+
+/* Liste des exigences */
+.requirements-list {
+    font-size: 0.85rem;
+    color: rgba(45, 55, 72, 0.8);
+    padding-left: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.requirement {
+    margin-bottom: 0.25rem;
+    position: relative;
+    padding-left: 1.5em;
+}
+
+.requirement::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgba(45, 55, 72, 0.6);
+}
+
+.requirement.valid {
+    color: #28a745;
+}
+
+.requirement.valid::before {
+    content: "✓";
+    color: #28a745;
+}
+
+/* Diviseur */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: rgba(45, 55, 72, 0.6);
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid rgba(45, 55, 72, 0.1);
+}
+
+/* Boutons sociaux */
+.social-login .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(45, 55, 72, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--text-color);
+}
+
+.social-login .btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+.social-login .btn i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+/* Adaptation pour les petits écrans */
+@media (max-width: 576px) {
+    .auth-card {
+        border-radius: 10px;
+    }
+
+    .auth-header, .auth-body {
+        padding: 1.5rem;
+    }
+}

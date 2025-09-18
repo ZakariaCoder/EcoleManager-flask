@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ajouter_note.css') }}">
+<style>
+    .visually-hidden {
+        position: absolute !important;
+        height: 1px; 
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-plus-circle-fill text-primary"></i> Ajouter des Notes</h1>
+                        <p class="text-muted mb-0">Saisissez les notes pour l'étudiant sélectionné</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('note.note') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations de l'étudiant -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person"></i> Informations de l'étudiant</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <img src="{{ url_for('static', filename=etudiant.Photo if etudiant.Photo else 'images/default-avatar.png') }}" 
+                                     class="rounded-circle" width="80" height="80" alt="Photo">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Nom complet :</strong><br>
+                                        <span class="text-primary">{{ etudiant.prenom }} {{ etudiant.nom }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>ID :</strong><br>
+                                        <span class="text-muted">#{{ etudiant.id_etudiant }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Classe :</strong><br>
+                                        <span class="badge bg-primary">{{ etudiant.class_ }}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Email :</strong><br>
+                                        <span class="text-muted">{{ etudiant.Email }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout de notes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-clipboard-plus"></i> Saisie des notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('note.ajouter_note', id=etudiant.id_etudiant) }}"> 
+                            <input type="hidden" name="student_id" value="{{ etudiant.id_etudiant }}">
+                            
+                            <!-- Sélection du semestre -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="semester" class="form-label">
+                                        <i class="bi bi-calendar"></i> Semestre
+                                    </label>
+                                    <select class="form-select" id="semester" name="semester">
+                                        <option value="">Sélectionner un semestre</option>
+                                        <option value="Semestre1">Semestre 1</option>
+                                        <option value="Semestre2">Semestre 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="academic_year" class="form-label">
+                                        <i class="bi bi-calendar-range"></i> Année académique
+                                    </label>
+                                    <select class="form-select" id="academic_year" name="academic_year">
+                                        <option value="">Sélectionner l'année</option>
+                                        <option value="2023-2024">2023-2024</option>
+                                        <option value="2024-2025">2024-2025</option>
+                                        <option value="2025-2026">2025-2026</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Matières et notes -->
+                            <div class="subjects-section">
+                                <h6 class="text-primary mb-3"><i class="bi bi-book"></i> Matières et notes</h6>
+                                
+                                {% for matiere in matieres %}
+                                <div class="subject-row mb-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <label class="form-label">
+                                                <i class="bi bi-book"></i> {{ matiere.nom_matiere }}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="note_{{ matiere.id_matiere }}" class="visually-hidden">Note pour {{ matiere.nom_matiere }}</label>
+                                            <input type="number" class="form-control" 
+                                                   id="note_{{ matiere.id_matiere }}"
+                                                   name="note_{{ matiere.id_matiere }}" 
+                                                   min="0" max="20" step="0.1" placeholder="Note /20">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="coefficient_{{ matiere.id_matiere }}" class="visually-hidden">Coefficient pour {{ matiere.nom_matiere }}</label>
+                                            <input type="number" class="form-control" 
+                                                   id="coefficient_{{ matiere.id_matiere }}"
+                                                   name="coefficient_{{ matiere.id_matiere }}" 
+                                                   min="0.5" max="5" step="0.5" value="{{ matiere.coefficient }}" 
+                                                   placeholder="Coefficient">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="status_{{ matiere.id_matiere }}" class="visually-hidden">Statut pour {{ matiere.nom_matiere }}</label>
+                                            <select class="form-select" id="status_{{ matiere.id_matiere }}" name="status_{{ matiere.id_matiere }}">
+                                                <option value="Admis">Admis</option>
+                                                <option value="Rattrapage">Rattrapage</option>
+                                                <option value="Ajourné">Ajourné</option>
+                                            </select>
+                                        </div>
+                                      
+                                 
+                       
+                        <div class="col-md-2">
+                            <span class="grade-status" id="status_{{ matiere.id_matiere }}_display">-</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Calcul automatique de la moyenne -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="average-calculation bg-light p-3 rounded">
+                        <h6 class="text-primary mb-2"><i class="bi bi-calculator"></i> Calcul de la moyenne</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Moyenne générale :</strong>
+                                <span class="text-success" id="general_average">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Mention :</strong>
+                                <span class="text-primary" id="mention">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>État global :</strong>
+                                <span class="text-info" id="global_status">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Total coefficients :</strong>
+                                <span class="text-muted" id="total_coefficients">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- Boutons d'action -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </button>
+                        <div>
+                            <!-- <button type="button" class="btn btn-outline-primary me-2" onclick="calculateAverage()">
+                                <i class="bi bi-calculator"></i> Calculer la moyenne
+                            </button> -->
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Enregistrer les notes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<script>
+     // Calcul automatique de la moyenne
+     function calculateAverage() {
+        let totalWeightedGrade = 0;
+        let totalCoefficients = 0;
+        let validGrades = 0;
+
+        // Parcourir toutes les matières
+        const subjectInputs = document.querySelectorAll('input[name^="note_"]');
+        subjectInputs.forEach(input => {
+            const matiereId = input.name.replace('note_', '');
+            const coeffInput = document.querySelector(`[name="coefficient_${matiereId}"]`);
+            
+            const grade = parseFloat(input.value) || 0;
+            const coefficient = parseFloat(coeffInput.value) || 0;
+            
+            if (grade > 0 && coefficient > 0) {
+                totalWeightedGrade += grade * coefficient;
+                totalCoefficients += coefficient;
+                validGrades++;
+            }
+        });
+
+        if (validGrades > 0 && totalCoefficients > 0) {
+            const average = totalWeightedGrade / totalCoefficients;
+            
+            // Afficher la moyenne
+            document.getElementById('general_average').textContent = average.toFixed(2);
+            document.getElementById('total_coefficients').textContent = totalCoefficients.toFixed(1);
+            
+            // Déterminer la mention
+            let mention = '';
+            if (average >= 18) mention = 'Excellent';
+            else if (average >= 16) mention = 'Très Bien';
+            else if (average >= 14) mention = 'Bien';
+            else if (average >= 12) mention = 'Assez Bien';
+            else if (average >= 10) mention = 'Passable';
+            else mention = 'Insuffisant';
+            
+            document.getElementById('mention').textContent = mention;
+            
+            // Déterminer l'état global
+            let globalStatus = '';
+            if (average >= 10) globalStatus = 'Admis';
+            else if (average >= 8) globalStatus = 'Rattrapage';
+            else globalStatus = 'Ajourné';
+            
+            document.getElementById('global_status').textContent = globalStatus;
+        }
+    }
+
+    // Mise à jour automatique des statuts par matière
+    function updateSubjectStatus(matiereId) {
+        const gradeInput = document.querySelector(`[name="note_${matiereId}"]`);
+        const statusSelect = document.querySelector(`[name="status_${matiereId}"]`);
+        const statusDisplay = document.getElementById(`status_${matiereId}_display`);
+        
+        const grade = parseFloat(gradeInput.value) || 0;
+        let status = '';
+        
+        if (grade >= 10) status = 'Admis';
+        else if (grade >= 8) status = 'Rattrapage';
+        else if (grade > 0) status = 'Ajourné';
+        else status = '-';
+        
+        statusSelect.value = status;
+        statusDisplay.textContent = status;
+        
+        // Couleur du statut
+        statusDisplay.className = 'grade-status';
+        if (status === 'Admis') statusDisplay.classList.add('text-success');
+        else if (status === 'Rattrapage') statusDisplay.classList.add('text-warning');
+        else if (status === 'Ajourné') statusDisplay.classList.add('text-danger');
+    }
+
+    // Initialisation des écouteurs d'événements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Écouteurs pour toutes les notes et coefficients
+        document.querySelectorAll('input[name^="note_"]').forEach(input => {
+            const matiereId = input.name.replace('note_', '');
+            
+            input.addEventListener('input', function() {
+                updateSubjectStatus(matiereId);
+                calculateAverage();
+            });
+        });
+        
+        document.querySelectorAll('input[name^="coefficient_"]').forEach(input => {
+            input.addEventListener('input', calculateAverage);
+        });
+
+        // Validation des entrées
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const value = parseFloat(this.value);
+                const min = parseFloat(this.min) || 0;
+                const max = parseFloat(this.max) || Infinity;
+                
+                if (value < min) this.value = min;
+                if (value > max) this.value = max;
+            });
+        });
+    });
+</script>
+
+{% endblock %}

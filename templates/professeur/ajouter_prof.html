@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-person-plus text-primary"></i> Ajouter un Professeur</h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire ci-dessous pour ajouter un nouveau professeur</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('professeur.professeur') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-card-text"></i> Informations du professeur</h5>
+                    </div>
+                    <div class="card-body">
+                            <form id="addProfessorForm" method="POST" action="{{ url_for('professeur.ajouter_prof') }}" enctype="multipart/form-data">   
+                                 <!-- Informations personnelles -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-person-circle me-2"></i>Informations personnelles
+                                    </h6>
+                                </div>
+                      
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Photo" class="form-label">Photo de profil</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="Photo" name="Photo" 
+                                               accept="image/*" onchange="previewImage(this)">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearPhoto()">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Formats acceptés: JPG, PNG, GIF (max 2MB)</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prenom" name="prenom" 
+                                           placeholder="Entrez le prénom" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nom" name="nom" 
+                                           placeholder="Entrez le nom" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="Email" class="form-control" id="Email" name="Email" 
+                                           placeholder="exemple@email.com" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" id="Telephone" name="Telephone" 
+                                           placeholder="+212 6 12 34 56 78" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="date_naissance" class="form-label">Date de naissance <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="genre" class="form-label">Genre</label>
+                                    <select class="form-select" id="genre" name="genre">
+                                        <option value="">Sélectionner</option>
+                                        <option value="M">Masculin</option>
+                                        <option value="F">Féminin</option>
+                                        
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Informations professionnelles -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-briefcase me-2"></i>Informations professionnelles
+                                    </h6>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="Departement" class="form-label">Département <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="Departement" name="Departement" required>
+                                        <option value="">Sélectionner un département</option>
+                                        <option value="Informatique">Informatique</option>
+                                        <option value="Mathématiques">Mathématiques</option>
+                                        <option value="Langues">Langues</option>
+                                        <option value="Physique">Physique</option>
+                                        <option value="Économie">Économie</option>
+                                        
+                                    </select>
+                                </div>
+                               
+                              
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Specialite" class="form-label">Spécialité</label>
+                                    <input type="text" class="form-control" id="Specialite" name="Specialite" 
+                                           placeholder="Ex: Intelligence Artificielle, Algèbre, etc.">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Date_embauche" class="form-label">Date d'embauche <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="Date_embauche" name="Date_embauche" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Statut <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="">Sélectionner un statut</option>
+                                        <option value="Actif">Actif</option>
+                                        <option value="En congé">En congé</option>
+                                        <option value="Retraité">Retraité</option>
+                                        <option value="Démissionné">Démissionné</option>
+                                    </select>
+                                </div>
+
+                              
+                            </div>
+
+                            <!-- Adresse -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-geo-alt me-2"></i>Adresse
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label for="address" class="form-label">Adresse complète <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="address" name="address" rows="3" 
+                                              placeholder="Entrez l'adresse complète" required></textarea>
+                                </div>
+
+                                
+                            </div>
+
+                            <!-- Informations supplémentaires -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-info-circle me-2"></i>Informations supplémentaires
+                                    </h6>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="siteWeb" class="form-label">Site web personnel</label>
+                                    <input type="url" class="form-control" id="siteWeb" name="siteWeb" 
+                                           placeholder="https://exemple.com">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="LinkedIn" class="form-label">LinkedIn</label>
+                                    <input type="url" class="form-control" id="LinkedIn" name="LinkedIn" 
+                                           placeholder="https://linkedin.com/in/exemple">
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="Biographie" class="form-label">Biographie</label>
+                                    <textarea class="form-control" id="Biographie" name="Biographie" rows="4" 
+                                              placeholder="Courte biographie du professeur..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Aperçu de la photo -->
+                            <div class="row mb-4" id="photoPreviewContainer" style="display: none;">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-image me-2"></i>Aperçu de la photo
+                                    </h6>
+                                    <div class="text-center">
+                                        <img id="photoPreview" src="" alt="Aperçu" 
+                                             class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <hr class="my-4">
+                                    <div class="d-flex justify-content-between">
+                                        
+                                        <div>
+                                            <a href="{{ url_for('professeur.professeur') }}" class="btn btn-outline-danger me-2">
+                                                <i class="bi bi-x-circle me-2"></i>Annuler
+                                            </a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-check-circle me-2"></i>Ajouter le professeur
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de succès -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-check-circle me-2"></i>Succès !
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Le professeur a été ajouté avec succès !</p>
+                <div class="alert alert-info">
+                    <strong>ID généré:</strong> <span id="generatedId"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-plus-circle me-2"></i>Ajouter un autre
+                </button>
+                <a href="{{ url_for('professeur.professeur') }}" class="btn btn-primary">
+                    <i class="bi bi-list me-2"></i>Voir la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+document.getElementById('addProfessorForm').addEventListener('submit', function(e) {
+    // Validation des champs requis
+    const requiredFields = ['nom', 'prenom', 'Email', 'Telephone', 'date_naissance', 
+                          'Departement', 'Date_embauche', 'status', 'address'];
+    
+    let isValid = true;
+    requiredFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (!element.value) {
+            element.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            element.classList.remove('is-invalid');
+        }
+    });
+
+    if (!isValid) {
+        e.preventDefault();
+        alert('Veuillez remplir tous les champs obligatoires');
+    }
+});
+</script>
+    
+
+<style>
+/* Styles spécifiques pour la page d'ajout de professeur */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+#photoPreview {
+    border: 2px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+{% endblock %}

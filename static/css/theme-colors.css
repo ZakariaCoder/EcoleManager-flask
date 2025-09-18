@@ -1,0 +1,213 @@
+/* Theme Colors CSS - Applying smooth blue color palette */
+
+:root {
+    --primary: #002c64;
+    --primary-light: #1877f21a;
+    --primary-hover: #0a66c2;
+    --primary-dark: #0d5ab9;
+    --secondary: #42b72a;
+    --secondary-hover: #36a420;
+    --dark: #2c3e50;
+    --light: #f8f9fa;
+    --light-bg: #f0f2f5;
+    --border-color: rgba(24, 119, 242, 0.2);
+    --text-primary: #1c1e21;
+    --text-secondary: #65676b;
+}
+
+/* Background colors */
+body {
+    background-color: var(--light-bg);
+}
+
+.sidebar {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h4 {
+    color: var(--primary);
+}
+
+/* Navigation items */
+.nav-item.active {
+    background-color: var(--primary-light);
+}
+
+.nav-item.active .nav-link,
+.nav-item.active .nav-link i {
+    color: var(--primary);
+}
+
+.nav-link:hover {
+    color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+/* Cards and containers */
+.dashboard-card, 
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.dashboard-card:hover, 
+.card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Card icons */
+.card-icon.blue {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Table headers */
+.student-table th,
+.table thead th {
+    background: var(--primary);
+    color: white;
+}
+
+/* Text colors */
+.text-primary {
+    color: var(--primary) !important;
+}
+
+/* Form elements */
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem var(--primary-light);
+}
+
+/* Navbar */
+.top-navbar {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* User profile */
+.user-profile img {
+    border: 2px solid var(--primary);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Pagination */
+.page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.page-link {
+    color: var(--primary);
+}
+
+.page-link:hover {
+    color: var(--primary-hover);
+}
+
+/* Custom select */
+.custom-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem var(--primary-light);
+}
+
+/* Modal headers */
+.modal-header {
+    background-color: var(--primary);
+    color: white;
+}
+
+/* Badges */
+.badge-primary {
+    background-color: var(--primary);
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: var(--primary);
+}
+
+/* Alerts */
+.alert-primary {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--primary-light);
+}
+
+/* List groups */
+.list-group-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Dropdown menus */
+.dropdown-item:active {
+    background-color: var(--primary);
+}
+
+/* Nav tabs */
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-color: var(--border-color) var(--border-color) #fff;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--primary-light);
+}
+
+/* Calendar */
+.fc-event {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* DataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--primary);
+    color: white !important;
+    border-color: var(--primary);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--primary-hover);
+    color: white !important;
+    border-color: var(--primary-hover);
+}

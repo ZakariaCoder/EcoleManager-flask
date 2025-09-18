@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-pencil-square text-warning"></i> Modifier le Professeur</h1>
+                        <p class="text-muted mb-0">Modifiez les informations du professeur ci-dessous</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('professeur.afficher_prof', id=professeur.id_prof) }}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left me-2"></i>Retour aux détails
+                        </a>
+                        <a href="{{ url_for('professeur.professeur') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-list me-2"></i>Liste des professeurs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-card-text"></i> Modifier les informations du professeur
+                            <span class="badge bg-primary ms-2">#{{ professeur.id_prof }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="editProfessorForm" method="POST" action="{{ url_for('professeur.modifier_prof', id=professeur.id_prof) }}" enctype="multipart/form-data">
+                            <!-- Informations personnelles -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-person-circle me-2"></i>Informations personnelles
+                                    </h6>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="professorId" class="form-label">ID Professeur</label>
+                                    <input type="text" class="form-control" id="professorId" name="professorId" 
+                                           value="{{ professeur.id_prof }}" readonly>
+                                    <div class="form-text">L'ID ne peut pas être modifié</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="photo" class="form-label">Photo de profil</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="photo" name="photo" 
+                                               accept="image/*" onchange="previewImage(this)">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearPhoto()">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Formats acceptés: JPG, PNG, GIF (max 2MB)</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prenom" name="prenom" 
+                                           value="{{ professeur.prenom }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nom" name="nom" 
+                                           value="{{ professeur.nom }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="Email" class="form-control" id="Email" name="Email" 
+                                           value="{{ professeur.Email }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" id="Telephone" name="Telephone" 
+                                           value="{{ professeur.Telephone }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="date_naissance" class="form-label">Date de naissance <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="date_naissance" name="date_naissance" 
+                                           value="{{ professeur.date_naissance.strftime('%Y-%m-%d') if professeur.date_naissance else '' }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="genre" class="form-label">Genre</label>
+                                    <select class="form-select" id="genre" name="genre">
+                                        <option value="">Sélectionner</option>
+                                        <option value="M" {% if professeur.genre == 'M' %}selected{% endif %}>Masculin</option>
+                                        <option value="F" {% if professeur.genre == 'F' %}selected{% endif %}>Féminin</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Informations professionnelles -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-briefcase me-2"></i>Informations professionnelles
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Departement" class="form-label">Département <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="Departement" name="Departement" required>
+                                        <option value="">Sélectionner un département</option>
+                                        <option value="Informatique" {% if professeur.Departement == 'Informatique' %}selected{% endif %}>Informatique</option>
+                                        <option value="Mathématiques" {% if professeur.Departement == 'Mathématiques' %}selected{% endif %}>Mathématiques</option>
+                                        <option value="Langues" {% if professeur.Departement == 'Langues' %}selected{% endif %}>Langues</option>
+                                        <option value="Physique" {% if professeur.Departement == 'Physique' %}selected{% endif %}>Physique</option>
+                                        <option value="Économie" {% if professeur.Departement == 'Économie' %}selected{% endif %}>Économie</option>
+                                        <option value="Chimie" {% if professeur.Departement == 'Chimie' %}selected{% endif %}>Chimie</option>
+                                        <option value="Biologie" {% if professeur.Departement == 'Biologie' %}selected{% endif %}>Biologie</option>
+                                        <option value="Histoire" {% if professeur.Departement == 'Histoire' %}selected{% endif %}>Histoire</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Specialite" class="form-label">Spécialité</label>
+                                    <input type="text" class="form-control" id="Specialite" name="Specialite" 
+                                           value="{{ professeur.Specialite }}">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Date_embauche" class="form-label">Date d'embauche <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="Date_embauche" name="Date_embauche" 
+                                           value="{{ professeur.Date_embauche.strftime('%Y-%m-%d') if professeur.Date_embauche else '' }}" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Statut <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="">Sélectionner un statut</option>
+                                        <option value="Actif" {% if professeur.status == 'Actif' %}selected{% endif %}>Actif</option>
+                                        <option value="En congé" {% if professeur.status == 'En congé' %}selected{% endif %}>En congé</option>
+                                        <option value="Retraité" {% if professeur.status == 'Retraité' %}selected{% endif %}>Retraité</option>
+                                        <option value="Démissionné" {% if professeur.status == 'Démissionné' %}selected{% endif %}>Démissionné</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Adresse -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-geo-alt me-2"></i>Adresse
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label for="address" class="form-label">Adresse complète <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="address" name="address" rows="3" required>{{ professeur.address }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Informations supplémentaires -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-info-circle me-2"></i>Informations supplémentaires
+                                    </h6>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="siteWeb" class="form-label">Site web personnel</label>
+                                    <input type="url" class="form-control" id="siteWeb" name="siteWeb" 
+                                           value="{{ professeur.siteWeb }}">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="LinkedIn" class="form-label">LinkedIn</label>
+                                    <input type="url" class="form-control" id="LinkedIn" name="LinkedIn" 
+                                           value="{{ professeur.LinkedIn }}">
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label for="Biographie" class="form-label">Biographie</label>
+                                    <textarea class="form-control" id="Biographie" name="Biographie" rows="4">{{ professeur.Biographie }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Aperçu de la photo actuelle et nouvelle -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-image me-2"></i>Photo actuelle
+                                    </h6>
+                                    <div class="text-center">
+                                        {% if professeur.Photo %}
+                                        <img src="{{ url_for('static', filename='uploads/' + professeur.Photo) }}" 
+                                             class="img-thumbnail" style="max-width: 150px; max-height: 150px;" alt="Photo actuelle">
+                                        {% else %}
+                                        <img src="{{ url_for('static', filename='img/default-professor.png') }}" 
+                                             class="img-thumbnail" style="max-width: 150px; max-height: 150px;" alt="Photo par défaut">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-image me-2"></i>Aperçu de la nouvelle photo
+                                    </h6>
+                                    <div class="text-center" id="newPhotoPreviewContainer" style="display: none;">
+                                        <img id="newPhotoPreview" src="" alt="Nouvelle photo" 
+                                             class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                    </div>
+                                    <div class="text-center" id="noNewPhotoMessage">
+                                        <p class="text-muted">Aucune nouvelle photo sélectionnée</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <hr class="my-4">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Réinitialiser
+                                        </button>
+                                        <div>
+                                            <a href="{{ url_for('professeur.afficher_prof', id=professeur.id_prof) }}" class="btn btn-outline-danger me-2">
+                                                <i class="bi bi-x-circle me-2"></i>Annuler
+                                            </a>
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="bi bi-check-circle me-2"></i>Enregistrer les modifications
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de succès -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-check-circle me-2"></i>Modifications enregistrées !
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Les informations du professeur ont été mises à jour avec succès !</p>
+                <div class="alert alert-info">
+                    <strong>Professeur:</strong> {{ professeur.prenom }} {{ professeur.nom }} (#{{ professeur.id_prof }})
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-pencil me-2"></i>Continuer à modifier
+                </button>
+                <a href="{{ url_for('professeur.afficher_prof', id=professeur.id_prof) }}" class="btn btn-primary">
+                    <i class="bi bi-eye me-2"></i>Voir les détails
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Prévisualisation de la nouvelle image
+function previewImage(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('newPhotoPreview');
+    const container = document.getElementById('newPhotoPreviewContainer');
+    const noPhotoMessage = document.getElementById('noNewPhotoMessage');
+    
+    if (file) {
+        // Vérification de la taille du fichier (2MB max)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Le fichier est trop volumineux. Taille maximum: 2MB');
+            input.value = '';
+            return;
+        }
+        
+        // Vérification du type de fichier
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Type de fichier non autorisé. Utilisez JPG, PNG ou GIF.');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            container.style.display = 'block';
+            noPhotoMessage.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        container.style.display = 'none';
+        noPhotoMessage.style.display = 'block';
+    }
+}
+
+// Effacer la nouvelle photo
+function clearPhoto() {
+    document.getElementById('photo').value = '';
+    document.getElementById('newPhotoPreviewContainer').style.display = 'none';
+    document.getElementById('noNewPhotoMessage').style.display = 'block';
+}
+
+// Réinitialiser le formulaire
+function resetForm() {
+    if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ? Toutes les modifications seront perdues.')) {
+        document.getElementById('editProfessorForm').reset();
+        clearPhoto();
+    }
+}
+
+// Validation du formulaire
+document.getElementById('editProfessorForm').addEventListener('submit', function(e) {
+    // Validation des champs requis
+    const requiredFields = ['prenom', 'nom', 'email', 'telephone', 'dateNaissance', 
+                          'departement', 'dateEmbauche', 'statut', 'address'];
+    
+    let isValid = true;
+    requiredFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (!element.value) {
+            element.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            element.classList.remove('is-invalid');
+        }
+    });
+
+    if (!isValid) {
+        e.preventDefault();
+        alert('Veuillez remplir tous les champs obligatoires');
+    }
+});
+</script>
+
+<style>
+/* Styles spécifiques pour la page de modification du professeur */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.img-thumbnail {
+    border: 2px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+{% endblock %}

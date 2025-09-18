@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modifier_note.css') }}">
+<style>
+    .visually-hidden {
+        position: absolute !important;
+        height: 1px; 
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
+    }
+    
+    .subject-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+        margin-bottom: 1rem;
+    }
+
+    .subject-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .subject-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .subject-content {
+        padding: 1.5rem;
+        background: #fff;
+    }
+
+    .subject-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 123, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .current-grade {
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-warning:hover {
+        background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+        border-color: #d39e00;
+        color: #212529;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+    }
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Ajoutez ceci pour les indicateurs de validation */
+    .is-valid {
+        border-color: #28a745;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+    
+    .is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Messages flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-pencil-square text-warning"></i> Modifier les Notes</h1>
+                        <p class="text-muted mb-0">Modifiez les notes et appréciations de l'étudiant</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('note.afficher_note', id=etudiant.id_etudiant) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Retour au bulletin
+                        </a>
+                        <a href="{{ url_for('note.note') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-list me-2"></i>Liste des étudiants
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations de l'étudiant -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Étudiant sélectionné</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <img src="{{ url_for('static', filename=etudiant.Photo if etudiant.Photo else 'images/default-avatar.png') }}" 
+                                     class="rounded-circle mb-3" width="80" height="80" alt="Photo">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h4 class="text-primary mb-1">{{ etudiant.prenom }} {{ etudiant.nom }}</h4>
+                                        <p class="text-muted mb-2"><i class="bi bi-envelope me-2"></i>{{ etudiant.Email }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>ID Étudiant:</strong> <span class="badge bg-secondary">#{{ etudiant.id_etudiant }}</span></p>
+                                        <p class="mb-1"><strong>Classe:</strong> <span class="badge bg-primary">{{ etudiant.class_ }}</span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>Année:</strong> <span class="text-muted">2023-2024</span></p>
+                                        <p class="mb-1"><strong>Semestre:</strong> <span class="badge bg-info">S1</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification des notes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Modification des notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('note.modifier_note', id=etudiant.id_etudiant) }}" id="modifyGradesForm" class="needs-validation" novalidate>
+                            <input type="hidden" name="student_id" value="{{ etudiant.id_etudiant }}">
+                            
+                            <!-- Matières et notes existantes -->
+                            {% if notes %}
+                                {% for note in notes %}
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <div class="subject-card">
+                                            <div class="subject-header">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="subject-icon me-3">
+                                                        <i class="bi bi-book text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">{{ note.matiere.nom_matiere if note.matiere else 'Matière inconnue' }}</h5>
+                                                        <small class="text-muted">Coefficient: {{ note.coefficient }}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="current-grade">
+                                                    <span class="badge bg-success">Note actuelle: {{ note.note }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="subject-content">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="note_{{ note.id_note }}" class="form-label">Nouvelle note</label>
+                                                        <div class="input-group">
+                                                            <input type="number" 
+                                                                   class="form-control" 
+                                                                   id="note_{{ note.id_note }}" 
+                                                                   name="note_{{ note.id_note }}"
+                                                                   value="{{ note.note }}"
+                                                                   min="0" 
+                                                                   max="20" 
+                                                                   step="0.1" 
+                                                                   required>
+                                                            <span class="input-group-text">/20</span>
+                                                        </div>
+                                                        <div class="invalid-feedback">
+                                                            Veuillez saisir une note valide entre 0 et 20.
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="coefficient_{{ note.id_note }}" class="form-label">Coefficient</label>
+                                                        <input type="number" 
+                                                               class="form-control" 
+                                                               id="coefficient_{{ note.id_note }}" 
+                                                               name="coefficient_{{ note.id_note }}"
+                                                               value="{{ note.coefficient }}"
+                                                               min="0.5" 
+                                                               max="5" 
+                                                               step="0.5" 
+                                                               required>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-12">
+                                                        <label for="appreciation_{{ note.id_note }}" class="form-label">Appréciation</label>
+                                                        <textarea class="form-control" 
+                                                                  id="appreciation_{{ note.id_note }}" 
+                                                                  name="appreciation_{{ note.id_note }}"
+                                                                  rows="2"
+                                                                  placeholder="Commentaire sur la performance...">{{ note.appreciation or '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Aucune note trouvée pour cet étudiant. 
+                                    <a href="{{ url_for('note.ajouter_note', id=etudiant.id_etudiant) }}" class="alert-link">Ajouter des notes</a>
+                                </div>
+                            {% endif %}
+
+                            <!-- Calcul automatique de la moyenne -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-primary mb-1" id="calculatedAverage">-</h4>
+                                                    <p class="mb-0">Moyenne calculée</p>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-success mb-1" id="calculatedMention">-</h4>
+                                                    <p class="mb-0">Mention</p>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-info mb-1" id="calculatedStatus">-</h4>
+                                                    <p class="mb-0">Statut</p>
+                                                </div>
+                                                <div class="col-md-3 text-center">
+                                                    <h4 class="text-warning mb-1" id="totalPoints">-</h4>
+                                                    <p class="mb-0">Total Points</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetForm()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Réinitialiser
+                                        </button>
+                                        <div class="d-flex gap-3">
+                                            <a href="{{ url_for('note.afficher_note', id=etudiant.id_etudiant) }}" class="btn btn-outline-danger btn-lg">
+                                                <i class="bi bi-x-circle me-2"></i>Annuler
+                                            </a>
+                                            <button type="submit" class="btn btn-warning btn-lg">
+                                                <i class="bi bi-check-circle me-2"></i>Enregistrer les modifications
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fonction pour calculer la moyenne automatiquement
+function calculateAverage() {
+    let totalPoints = 0;
+    let totalCoeff = 0;
+    
+    // Parcourir toutes les notes existantes
+    const noteInputs = document.querySelectorAll('input[name^="note_"]');
+    noteInputs.forEach(input => {
+        const noteId = input.name.replace('note_', '');
+        const coeffInput = document.querySelector(`[name="coefficient_${noteId}"]`);
+        
+        const grade = parseFloat(input.value) || 0;
+        const coefficient = parseFloat(coeffInput.value) || 0;
+        
+        if (grade > 0 && coefficient > 0) {
+            totalPoints += grade * coefficient;
+            totalCoeff += coefficient;
+        }
+    });
+    
+    const average = totalCoeff > 0 ? totalPoints / totalCoeff : 0;
+    
+    // Mettre à jour l'affichage
+    document.getElementById('calculatedAverage').textContent = average.toFixed(2);
+    document.getElementById('totalPoints').textContent = totalPoints.toFixed(1);
+    
+    // Calculer la mention
+    let mention = '';
+    if (average >= 18) mention = 'Excellent';
+    else if (average >= 16) mention = 'Très Bien';
+    else if (average >= 14) mention = 'Bien';
+    else if (average >= 12) mention = 'Assez Bien';
+    else if (average >= 10) mention = 'Passable';
+    else mention = 'Insuffisant';
+    
+    document.getElementById('calculatedMention').textContent = mention;
+    
+    // Calculer le statut
+    let status = '';
+    if (average >= 10) status = 'Admis';
+    else if (average >= 8) status = 'Rattrapage';
+    else status = 'Ajourné';
+    
+    document.getElementById('calculatedStatus').textContent = status;
+    
+    return average;
+}
+
+// Validation des notes
+function validateGrades() {
+    let isValid = true;
+    
+    const noteInputs = document.querySelectorAll('input[name^="note_"]');
+    noteInputs.forEach(input => {
+        const value = parseFloat(input.value);
+        
+        if (isNaN(value) || value < 0 || value > 20) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+    });
+    
+    return isValid;
+}
+
+// Fonction pour réinitialiser le formulaire
+function resetForm() {
+    document.getElementById('modifyGradesForm').reset();
+    document.getElementById('modifyGradesForm').classList.remove('was-validated');
+    
+    // Retirer les classes de validation
+    const noteInputs = document.querySelectorAll('input[name^="note_"]');
+    noteInputs.forEach(input => {
+        input.classList.remove('is-valid', 'is-invalid');
+    });
+    
+    // Recalculer la moyenne
+    calculateAverage();
+}
+
+// Écouter les changements sur tous les champs de notes et coefficients
+document.addEventListener('DOMContentLoaded', function() {
+    // Écouteurs pour toutes les notes et coefficients
+    document.querySelectorAll('input[name^="note_"]').forEach(input => {
+        input.addEventListener('input', calculateAverage);
+    });
+    
+    document.querySelectorAll('input[name^="coefficient_"]').forEach(input => {
+        input.addEventListener('input', calculateAverage);
+    });
+
+    // Validation des entrées
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const value = parseFloat(this.value);
+            const min = parseFloat(this.min) || 0;
+            const max = parseFloat(this.max) || Infinity;
+            
+            if (value < min) this.value = min;
+            if (value > max) this.value = max;
+        });
+    });
+    
+    // Calculer la moyenne initiale
+    calculateAverage();
+});
+
+// Gestion du formulaire
+document.getElementById('modifyGradesForm').addEventListener('submit', function(e) {
+    // Empêche la soumission normale
+    e.preventDefault();
+    
+    if (!validateGrades()) {
+        alert('Veuillez corriger les erreurs dans le formulaire.');
+        return;
+    }
+    
+    // Afficher un indicateur de chargement
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i> Enregistrement...';
+    
+    // Soumettre le formulaire programmatiquement
+    this.submit();
+});
+</script>
+
+{% endblock %} 

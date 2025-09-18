@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-person-plus-fill text-primary"></i> Ajouter un Étudiant</h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire ci-dessous pour ajouter un nouvel étudiant</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('etudiant.etudiant') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-plus"></i> Informations de l'étudiant</h5>
+                    </div>
+                    <div class="card-body p-4">
+                       <!-- Formulaire d'ajout - version corrigée -->
+<form id="addStudentForm" enctype="multipart/form-data" method="POST" action="{{ url_for('etudiant.ajouter_etud') }}">
+    <!-- Section Photo -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <div class="profile-photo-container">
+                <div class="profile-photo-wrapper">
+                    <img id="previewPhoto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB4PSIzMCIgeT0iMjUiIHdpZHRoPSI2MCIgaGVpZ2h0PSI3MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjQkNDMEQ0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTIgMTJjMi4yMSAwIDQtMS43OSA0LTRzLTEuNzktNC00LTQtNCAxLjc5LTQgNCAxLjc5IDQgNCA0em0wIDJjLTIuNjcgMC04IDEuMzQtOCA0djJoMTZ2LTJjMC0yLjY2LTUuMzMtNC04LTR6Ii8+Cjwvc3ZnPgo8L3N2Zz4K" 
+                         alt="Photo de profil" class="profile-photo">
+                    <div class="photo-overlay">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="Photo" name="Photo" accept="image/*" class="d-none">
+                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="document.getElementById('Photo').click()">
+                    <i class="bi bi-upload"></i> Choisir une photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations personnelles -->
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="prenom" class="form-label">
+                <i class="bi bi-person"></i> Prénom <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="prenom" name="prenom" required>
+            
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="nom" class="form-label">
+                <i class="bi bi-person"></i> Nom <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="nom" name="nom" required>
+            
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="Email" class="form-label">
+                <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+            </label>
+            <input type="email" class="form-control" id="Email" name="Email" required>
+            
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">
+                <i class="bi bi-telephone"></i> Téléphone
+            </label>
+            <input type="tel" class="form-control" id="telephone" name="telephone">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="birth_date" class="form-label">
+                <i class="bi bi-calendar"></i> Date de naissance
+            </label>
+            <input type="date" class="form-control" id="date_naissance" name="date_naissance">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="class" class="form-label">
+                <i class="bi bi-book"></i> Classe <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" id="class" name="class" required>
+                <option value="">Sélectionner une classe</option>
+                <option value="GI1">GI1</option>
+                <option value="GI2">GI2</option>
+                <option value="GI3">GI3</option>
+                <option value="GI4">GI4</option>
+                <option value="GI5">GI5</option>
+                <option value="GAE1">GAE1</option>
+                <option value="GAE2">GAE2</option>
+                <option value="GAE3">GAE3</option>
+                <option value="GAE4">GAE4</option>
+                <option value="GAE5">GAE5</option>
+                <!-- ... autres options ... -->
+            </select>
+           
+        </div>
+    </div>
+
+    <!-- Nouveaux champs -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="annee_universitaire" class="form-label">
+                Année universitaire
+            </label>
+            <select class="form-select" id="annee_universitaire" name="annee_universitaire">
+                <option value="2023-2024">2023-2024</option>
+                <option value="2024-2025" selected>2024-2025</option>
+                <option value="2025-2026">2025-2026</option>
+                <option value="2026-2027">2026-2027</option>
+                <option value="2027-2028">2027-2028</option>
+                <option value="2028-2029">2028-2029</option>
+                <option value="2029-2030">2029-2030</option>
+                <option value="2030-2031">2030-2031</option>
+                <option value="2031-2032">2031-2032</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="genre" class="form-label">
+                <i class="bi bi-gender-ambiguous"></i> Genre
+            </label>
+            <select class="form-select" id="genre" name="genre">
+                <option value="">Sélectionner</option>
+                <option value="Masculin">Masculin</option>
+                <option value="Feminin">Féminin</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="date_inscription" class="form-label">
+                <i class="bi bi-calendar-check"></i> Date d'inscription
+            </label>
+            <input type="date" class="form-control" id="date_inscription" name="date_inscription">
+        </div>
+    </div>
+
+    <!-- Adresse -->
+    <div class="row">
+        <div class="col-12 mb-3">
+            <label for="address" class="form-label">
+                <i class="bi bi-house"></i> Adresse
+            </label>
+            <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+        </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('etudiant.etudiant') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   <script>
+    // Prévisualisation photo
+    document.getElementById('Photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('previewPhoto').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Validation avant soumission
+    document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validation des champs requis
+        const requiredFields = ['prenom', 'nom', 'email', 'class'];
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires.');
+        }
+    });
+
+</script>
+
+{% endblock %}

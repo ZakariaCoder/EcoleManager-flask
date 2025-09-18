@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-clipboard-data-fill text-primary"></i> Gestion des Notes</h1>
+                        <p class="text-muted mb-0">Consultez les résultats et mentions de tous les étudiants</p>
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-primary text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ total_students }}</h3>
+                        <p>Étudiants</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ admitted_count }}</h3>
+                        <p>Admis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ retake_count }}</h3>
+                        <p>Rattrapage</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-danger text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ failed_count }}</h3>
+                        <p>Ajournés</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Rechercher...">
+                            </div>
+                            <div class="col-md-2">
+                                <select id="classFilter" class="form-select">
+                                    <option value="">Toutes les classes</option>
+                                    <option value="GAE1">GAE1</option>
+                                    <option value="GAE2">GAE2</option>
+                                    <option value="GI1">GI1</option>
+                                    <option value="GI2">GI2</option>
+                                    <option value="GI3">GI3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select id="statusFilter" class="form-select">
+                                    <option value="">Tous les états</option>
+                                    <option value="Admis">Admis</option>
+                                    <option value="Rattrapage">Rattrapage</option>
+                                    <option value="Ajourné">Ajourné</option>
+                                    <option value="Non noté">Non noté</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                    <i class="bi bi-funnel"></i> Filtrer
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-table"></i> Liste des étudiants</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="studentsTable" class="table table-hover mb-0">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Photo</th>
+                                        <th>Nom Complet</th>
+                                        <th>Classe</th>
+                                        <th>Moyenne</th>
+                                        <th>Mention</th>
+                                        <th>État</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>#{{ student.id_etudiant }}</td>
+                                        <td>
+                                            <img src="{{ student.Photo or 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB4PSIxMCIgeT0iOCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IiNCQ0MwRDQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMiAxMmMyLjIxIDAgNC0xLjc5IDQtNHMtMS43OS00LTQtNC00IDEuNzktNCA0IDEuNzkgNCA0IDR6bTAgMmMtMi42NyAwLTggMS4zNC04IDR2MmgyNnYtMmMwLTIuNjYtNS4zMy00LTgtNHoiLz4KPC9zdmc+Cjwvc3ZnPgo=' }}" 
+                                                 class="rounded-circle" width="45" height="45" alt="Photo">
+                                        </td>
+                                        <td>
+                                            <div class="student-info">
+                                                <h6 class="mb-0">{{ student.prenom }} {{ student.nom }}</h6>
+                                                <small class="text-muted">{{ student.Email }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ student.class_ }}</span>
+                                        </td>
+                                        <td>
+                                            {% if student.moyenne is not none %}
+                                                <span class="grade-value {{ 'text-success' if student.moyenne >= 10 else 'text-danger' }}">
+                                                    {{ "%.2f"|format(student.moyenne) }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.mention != "Non applicable" %}
+                                                {% if student.mention == "Excellent" %}
+                                                    <span class="badge bg-success">{{ student.mention }}</span>
+                                                {% elif student.mention == "Très Bien" %}
+                                                    <span class="badge bg-info">{{ student.mention }}</span>
+                                                {% elif student.mention == "Bien" %}
+                                                    <span class="badge bg-primary">{{ student.mention }}</span>
+                                                {% elif student.mention == "Assez Bien" %}
+                                                    <span class="badge bg-warning">{{ student.mention }}</span>
+                                                {% elif student.mention == "Passable" %}
+                                                    <span class="badge bg-secondary">{{ student.mention }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ student.mention }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-light text-dark">{{ student.mention }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.Etat == "Admis" %}
+                                                <span class="badge bg-success">{{ student.Etat }}</span>
+                                            {% elif student.Etat == "Rattrapage" %}
+                                                <span class="badge bg-warning">{{ student.Etat }}</span>
+                                            {% elif student.Etat == "Ajourné" %}
+                                                <span class="badge bg-danger">{{ student.Etat }}</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-dark">{{ student.Etat }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{{ url_for('note.afficher_note', id=student.id_etudiant) }}" class="btn btn-sm btn-outline-primary" title="Voir les notes">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('note.ajouter_note', id=student.id_etudiant) }}" class="btn btn-sm btn-outline-success" title="Ajouter des notes">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                </a>
+                                                <a href="{{ url_for('note.modifier_note', id=student.id_etudiant) }}" class="btn btn-sm btn-outline-warning" title="Modifier les notes">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    // Initialize DataTable
+    $(document).ready(function() {
+        $('#studentsTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+            },
+            responsive: true,
+            pageLength: 25,
+            order: [[4, 'desc']]
+        });
+    });
+
+    // Apply filters
+    function applyFilters() {
+        const searchTerm = $('#searchInput').val().toLowerCase();
+        const classFilter = $('#classFilter').val();
+        const statusFilter = $('#statusFilter').val();
+        
+        const table = $('#studentsTable').DataTable();
+        
+        // Reset search
+        table.search('').draw();
+        
+        // Apply custom filters
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const studentName = data[2].toLowerCase();
+            const studentClass = data[3];
+            const studentStatus = data[6];
+            
+            const matchesSearch = searchTerm === '' || 
+                studentName.includes(searchTerm) || 
+                data[0].toLowerCase().includes(searchTerm);
+            
+            const matchesClass = classFilter === '' || studentClass.includes(classFilter);
+            const matchesStatus = statusFilter === '' || studentStatus.includes(statusFilter);
+            
+            return matchesSearch && matchesClass && matchesStatus;
+        });
+        
+        table.draw();
+        
+        // Remove custom filters after applying
+        $.fn.dataTable.ext.search.pop();
+    }
+
+    // Reset filters
+    function resetFilters() {
+        $('#searchInput').val('');
+        $('#classFilter').val('');
+        $('#statusFilter').val('');
+        
+        const table = $('#studentsTable').DataTable();
+        table.search('').columns().search('').draw();
+    }
+
+    // Export results
+   
+</script>
+
+{% endblock %}

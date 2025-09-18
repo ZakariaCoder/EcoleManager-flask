@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+    <div class="container-fluid py-4">
+        <!-- Header de la page -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-1"><i class="bi bi-upload text-primary"></i> Importation de Fichiers</h1>
+                        <p class="text-muted mb-0">Importez des données depuis des fichiers Excel (.xlsx, .xls, .csv)</p>
+                    </div>
+                    <div>
+                       
+                        <button class="btn btn-outline-primary me-2" onclick="window.location.reload()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Actualiser
+                        </button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques des données -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-secondary text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ stats.etudiants }}</h3>
+                        <p>Étudiants</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-dark text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ stats.professeurs }}</h3>
+                        <p>Professeurs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ stats.matieres }}</h3>
+                        <p>Matières</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning text-white">
+                    <div class="stats-icon">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h3>{{ stats.notes }}</h3>
+                        <p>Notes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone d'importation -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-cloud-upload"></i> Zone d'importation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="importForm" method="post" action="{{ url_for('import.upload_file') }}" enctype="multipart/form-data" onsubmit="return validateImport()">
+                            <!-- Sélection du type d'importation -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="importType" class="form-label">Type d'importation <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="importType" name="import_type" required>
+                                        <option value="">Sélectionner le type</option>
+                                        <option value="etudiants">Étudiants</option>
+                                        <option value="professeurs">Professeurs</option>
+                                        <option value="matieres">Matières</option>
+                                        <option value="notes">Notes</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Zone de drag & drop -->
+                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <i class="bi bi-cloud-arrow-up"></i>
+                                    </div>
+                                    <h4>Glissez et déposez votre fichier ici</h4>
+                                    <p class="text-muted">ou cliquez pour sélectionner un fichier</p>
+                                    <div class="supported-formats">
+                                        <span class="badge bg-light text-dark me-2">.xlsx</span>
+                                        <span class="badge bg-light text-dark me-2">.xls</span>
+                                        <span class="badge bg-light text-dark">.csv</span>
+                                    </div>
+                                    <input type="file" id="fileInput" name="file" accept=".xlsx,.xls,.csv" style="display: none;" required>
+                                </div>
+                            </div>
+
+                            <!-- Informations du fichier sélectionné -->
+                            <div id="fileInfo" class="mt-4" style="display: none;">
+                                <div class="alert alert-info">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-excel text-primary me-3" style="font-size: 2rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" id="fileName">nom_du_fichier.xlsx</h6>
+                                            <p class="mb-1" id="fileSize">Taille: 2.5 MB</p>
+                                            <p class="mb-0" id="fileType">Type: Excel (.xlsx)</p>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFile()">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="row mt-4" id="actionButtons" style="display: none;">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-danger me-2" onclick="removeFile()">
+                                            <i class="bi bi-x-circle me-2"></i>Annuler
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                                            <i class="bi bi-play-circle me-2"></i>Commencer l'importation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique des importations -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historique des importations</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Fichier</th>
+                                        <th>Type</th>
+                                        <th>Statut</th>
+                                        <th>Lignes traitées</th>
+                                        <th>Erreurs</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for imp in imports %}
+                                    <tr>
+                                        <td>{{ imp.date_import.strftime('%d/%m/%Y %H:%M') }}</td>
+                                        <td>{{ imp.nom_fichier }}</td>
+                                        <td>{{ imp.type_import }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if imp.status == 'completed' else 'warning' }}">
+                                                {{ 'Réussi' if imp.status == 'completed' else 'Avec erreurs' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ imp.nombre_traitees }}/{{ imp.nombre_lignes }}</td>
+                                        <td>{{ imp.lignes_erreur }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de résultat -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle me-2"></i>Résultat de l'importation
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'warning' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endwith %}
+<!-- Script JavaScript pour l'importation -->
+<script src="{{ url_for('static', filename='js/import.js') }}"></script>
+
+
+<style>
+/* Styles spécifiques pour la page d'importation */
+.stats-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+    opacity: 0.8;
+}
+
+.stats-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stats-content p {
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.upload-zone {
+    border: 3px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.upload-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.upload-zone:hover .upload-icon,
+.upload-zone.dragover .upload-icon {
+    color: #007bff;
+}
+
+.upload-content h4 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.supported-formats {
+    margin: 1rem 0;
+}
+
+.progress {
+    height: 1.5rem;
+    border-radius: 0.75rem;
+}
+
+.progress-bar {
+    border-radius: 0.75rem;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
+
+.table-responsive {
+    border-radius: 0.375rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .upload-zone {
+        padding: 2rem 1rem;
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Animation pour le spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner-border {
+    animation: spin 1s linear infinite;
+}
+</style>
+
+{% endblock %}
+
+
