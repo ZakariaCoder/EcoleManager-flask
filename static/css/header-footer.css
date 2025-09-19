@@ -113,7 +113,13 @@
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.9);
 }
-
+.footer-developers a {
+    color: #03A9F4;
+    transition: color 0.3s ease;
+}
+.footer-developers a:hover {
+    color: #65cfff;
+}
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .header-container, .footer-container {

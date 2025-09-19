@@ -8,6 +8,106 @@
     --border-color: rgba(45, 55, 72, 0.2);
 }
 
+/* Typewriter Animation */
+.typewriter-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 15px 0;
+    text-align: center;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.wrapper {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+}
+
+.static-text {
+    color: var(--light-color);
+    font-weight: 600;
+}
+
+.typing-container {
+    position: relative;
+    display: inline-block;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.typing-text {
+    position: absolute;
+    top: -13px;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.first-text {
+    animation: typing-erasing 8s steps(15, end) infinite;
+    width: 0;
+}
+
+.second-text {
+    opacity: 0;
+    animation: typing-erasing-2 8s steps(12, end) infinite;
+    width: 0;
+}
+
+.cursor {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background-color: var(--accent-color);
+    animation: blink-cursor 8s step-end infinite;
+}
+
+@keyframes typing-erasing {
+    0%, 50%, 100% {
+        width: 0;
+    }
+    10%, 40% {
+        width: 15ch;
+    }
+}
+
+@keyframes typing-erasing-2 {
+    0%, 50% {
+        width: 0;
+        opacity: 0;
+    }
+    60%, 90% {
+        width: 12ch;
+        opacity: 1;
+    }
+    100% {
+        width: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes blink-cursor {
+    0%, 50%, 100% {
+        opacity: 0;
+    }
+    10%, 35% {
+        opacity: 1;
+    }
+    40%, 49% {
+        opacity: 0;
+    }
+    60%, 90% {
+        opacity: 1;
+    }
+}
+
 body {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                 url('/static/img/login.jpg') center/cover no-repeat fixed;
